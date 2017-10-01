@@ -91,6 +91,7 @@ public class MainFrame extends Frame{
                 arrowX[0] = bowX + 50;
                 arrow.setLocation(arrowX[0], arrowY);
                 arrow.setVisible(true);
+                btnF.setEnabled(false);
                 fly.start();
             }
         });
@@ -132,10 +133,12 @@ public class MainFrame extends Frame{
                 if(arrowY < 0){
                     arrowY = 480;
                     arrow.setVisible(false);
+                    btnF.setEnabled(true);
                     fly.stop();
                 }else if(arrowX[0] < targetX+160 && arrowX[0] > targetX-50 && arrowY < 160){
                     arrowY = 480;
                     arrow.setVisible(false);
+                    btnF.setEnabled(true);
                     fly.stop();
                     Score++;
                     labScore.setText("Score: " + Score);
