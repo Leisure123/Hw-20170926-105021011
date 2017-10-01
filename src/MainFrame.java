@@ -12,8 +12,11 @@ public class MainFrame extends Frame{
     private Button btnExit = new Button("Exit");
     private Button btnAuto = new Button("Auto move");
     private Label labScore = new Label("Score: 0");
+    private int Score = 0;
     private Label lab = new Label();
     private Font f = new Font(null,Font.BOLD,14);
+    private boolean check1 = true;
+    private boolean checkAuto = true;
     private Timer auto;
     private Timer fly;
 
@@ -23,7 +26,10 @@ public class MainFrame extends Frame{
     private JLabel arrow = new JLabel(a);
     private JLabel bow = new JLabel(b);
     private JLabel target = new JLabel(t);
+    private int targetX = (int)(Math.random()*800);
     private int bowX = 380;
+    private int arrowX[] = new int [1];
+    private int arrowY = 480;
 
     public MainFrame(){
         initComp();
@@ -31,6 +37,7 @@ public class MainFrame extends Frame{
 
     private void initComp(){
         this.setLayout(null);
+        this.setResizable(false);
         this.setTitle("ヽ(∀ﾟ)人(ﾟ∀ﾟ)人( ﾟ∀)人(∀ﾟ)人(ﾟ∀ﾟ)人( ﾟ∀)ﾉ");
         this.setBounds(100,100,900,850);
         btnExit.setBounds(810,800,70,30);
@@ -52,7 +59,7 @@ public class MainFrame extends Frame{
 
         arrow.setSize(50,60);
         bow.setBounds(bowX,550,150,100);
-        target.setBounds((int) (Math.random()*800),50,110,110);
+        target.setBounds(targetX,50,110,110);
         arrow.setVisible(false);
         this.add(target);
         this.add(bow);
@@ -62,7 +69,7 @@ public class MainFrame extends Frame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(bowX > 0){
-                    bowX -= 10;
+                    bowX -= 20;
                     bow.setLocation(bowX,550);
                 }
             }
@@ -72,13 +79,36 @@ public class MainFrame extends Frame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(bowX < 750){
-                    bowX += 10;
+                    bowX += 20;
                     bow.setLocation(bowX,550);
                 }
             }
         });
 
+        btnF.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                arrowX[0] = bowX + 50;
+                arrow.setLocation(arrowX[0], arrowY);
+                arrow.setVisible(true);
+                fly.start();
+            }
+        });
 
+        btnAuto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(checkAuto){
+                    auto.start();
+                    checkAuto = false;
+                    btnAuto.setLabel("Stop Auto");
+                }else{
+                    auto.stop();
+                    checkAuto = true;
+                    btnAuto.setLabel("Auto move");
+                }
+            }
+        });
 
         btnExit.addActionListener(new ActionListener() {
             @Override
@@ -94,17 +124,43 @@ public class MainFrame extends Frame{
             }
         });
 
-        fly = new Timer(200, new ActionListener() {
+        fly = new Timer(40, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                arrowY -= 10;
+                arrow.setLocation(arrowX[0],arrowY);
+                if(arrowY < 0){
+                    arrowY = 480;
+                    arrow.setVisible(false);
+                    fly.stop();
+                }else if(arrowX[0] < targetX+160 && arrowX[0] > targetX-50 && arrowY < 160){
+                    arrowY = 480;
+                    arrow.setVisible(false);
+                    fly.stop();
+                    Score++;
+                    labScore.setText("Score: " + Score);
+                    targetX = (int)(Math.random()*800);
+                    target.setLocation(targetX,50);
+                }
             }
         });
 
-        auto = new Timer(500, new ActionListener() {
+        auto = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                if(bowX < 750 && check1){
+                    bowX += 20;
+                    if(bowX > 750){
+                        check1 = false;
+                    }
+                    bow.setLocation(bowX,550);
+                }else{
+                    bowX -= 20;
+                    if(bowX == 0){
+                        check1 = true;
+                    }
+                    bow.setLocation(bowX,550);
+                }
             }
         });
     }
